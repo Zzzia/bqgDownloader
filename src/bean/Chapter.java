@@ -1,6 +1,8 @@
+package bean;
+
 public class Chapter {
-    String name;
-    String href;
+    public String name;
+    public String href;
 
     @Override
     public String toString() {
