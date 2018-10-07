@@ -85,8 +85,8 @@ public class RegexUtil {
         // 打开和URL之间的连接
         URLConnection connection = realUrl.openConnection();
         // 设置通用的请求属性
-        connection.setConnectTimeout(20000);
-        connection.setReadTimeout(20000);
+        connection.setConnectTimeout(100000);
+        connection.setReadTimeout(100000);
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("connection", "Keep-Alive");
         connection.setRequestProperty("Charsert", "UTF-8");
@@ -107,13 +107,13 @@ public class RegexUtil {
 
     /**
      * 用于解析类似<a...>..</a>的工具
-     * 
-        String html = "<a href=\"15818515.html\">第21章 我很大，活很好，很持久，还能旋转</a>";
-        util.RegexUtil.Tag tag = new util.RegexUtil.Tag(html);
-        //获取15818515.html
-        System.out.println(tag.getValue("href"));
-        //获取第21章 我很大，活很好，很持久，还能旋转
-        System.out.println(tag.getText());
+     * <p>
+     * String html = "<a href=\"15818515.html\">第21章 我很大，活很好，很持久，还能旋转</a>";
+     * util.RegexUtil.Tag tag = new util.RegexUtil.Tag(html);
+     * //获取15818515.html
+     * System.out.println(tag.getValue("href"));
+     * //获取第21章 我很大，活很好，很持久，还能旋转
+     * System.out.println(tag.getText());
      */
     public static class Tag {
         private String tagName;

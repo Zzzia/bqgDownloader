@@ -1,7 +1,7 @@
 package source;
 
-import bean.ChapterBuffer;
 import bean.Chapter;
+import bean.ChapterBuffer;
 import util.RegexUtil;
 
 import java.io.IOException;

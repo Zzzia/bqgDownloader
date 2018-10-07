@@ -5,19 +5,37 @@ import bean.ChapterBuffer;
 import util.RegexUtil;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created By zia on 2018/10/5.
  * 看神作 http://www.kanshenzuo.com
- * 书挺全的
+ * 书挺全的，更新也比较及时
  * 测试约500k/s
  */
 public class Kanshenzuo extends FastDownloader {
 
+    private static String root = "http://www.kanshenzuo.com";
+
     public Kanshenzuo(String bookName, String catalogUrl, String path) {
         super(bookName, catalogUrl, path);
+    }
+
+    public Kanshenzuo(String bookName, String path) {
+        super(bookName, getUrl(bookName), path);
+    }
+
+    private static String getUrl(String bookName) {
+        try {
+            return root + "/modules/article/search.php?searchkey=+"
+                    + URLEncoder.encode(bookName, "GBK");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     @Override
@@ -46,14 +64,14 @@ public class Kanshenzuo extends FastDownloader {
 
         String html = getHtml(chapter.href);
 
-        String sub = RegexUtil.regexExcept("<div id=\"content\">","</div>",html).get(0);
+        String sub = RegexUtil.regexExcept("<div id=\"content\">", "</div>", html).get(0);
 
         String lines[] = sub.split("<br>|<br/>|<br />");
 
         List<String> content = new ArrayList<>();
 
         for (String line : lines) {
-            if (!line.isEmpty()){
+            if (!line.isEmpty()) {
                 content.add(cleanContent(line));
             }
         }

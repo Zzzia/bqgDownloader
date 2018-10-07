@@ -2,6 +2,7 @@ package source;
 
 import bean.Chapter;
 import bean.ChapterBuffer;
+import tool.FoxEpubWriter;
 import util.RegexUtil;
 
 import java.io.*;
@@ -38,15 +39,32 @@ public abstract class FastDownloader {
         }
     }
 
+    /**
+     * 根据小说目录页面解析所有的小说章节
+     *
+     * @param catalogUrl 目录地址
+     * @return Chapter集合
+     */
     protected abstract List<Chapter> getChapters(String catalogUrl) throws IOException;
 
+    /**
+     * 通过小说章节解析这一章节的html文字，保存在ChapterBuffer中
+     *
+     * @param chapter 小说章节 包括了url和标题
+     * @param num     序号，之后排序的标准
+     * @return ChapterBuffer集合
+     */
     protected abstract ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException;
 
     public void downloadTXT() throws IOException, InterruptedException {
-        String filePath = path + "/" + bookName + ".txt";
+        String filePath = path + File.separator + bookName + ".txt";
+
+        System.out.println("解析目录...");
 
         //从目录页获取有序章节
         List<Chapter> chapters = getChapters(catalogUrl);
+
+        System.out.println("开始下载章节...");
 
         //并发下载所有章节，根据顺序排序
         List<ChapterBuffer> books = downloadChapter(chapters);
@@ -77,8 +95,56 @@ public abstract class FastDownloader {
         System.out.println("保存完成 ： " + filePath);
     }
 
-    public void downloadEPUB() {
+    public void downloadEPUB() throws IOException, InterruptedException {
+        saveKindle(false);
+    }
 
+    public void downloadMOBI() throws IOException, InterruptedException {
+//        saveKindle(true);
+        System.out.println("自行下载kindlegen软件吧...不同平台不好适配。epub转mobi，效果很好...");
+        System.exit(0);
+    }
+
+    private void saveKindle(boolean isMOBI) throws IOException, InterruptedException {
+        String name;
+        if (isMOBI) {
+            name = bookName + ".mobi";
+        } else {
+            name = bookName + ".epub";
+        }
+        String filePath = path + File.separator + name;
+
+        System.out.println("解析目录...");
+
+        //从目录页获取有序章节
+        List<Chapter> chapters = getChapters(catalogUrl);
+
+        System.out.println("开始下载章节...");
+
+        //并发下载所有章节，根据顺序排序
+        List<ChapterBuffer> books = downloadChapter(chapters);
+
+        FoxEpubWriter foxEpubWriter = new FoxEpubWriter(new File(filePath), name);
+
+        if (isMOBI) {
+            foxEpubWriter.setEpub(false);
+        } else {
+            foxEpubWriter.setEpub(true);
+        }
+
+        books.forEach(chapterBuffer -> {
+            StringBuilder content = new StringBuilder();
+            for (String line : chapterBuffer.content) {
+                content.append("<p>");
+                content.append("    ");
+                content.append(line);
+                content.append("</p>");
+            }
+            foxEpubWriter.addChapter(chapterBuffer.name, content.toString());
+        });
+
+        foxEpubWriter.saveAll();
+        System.out.println("保存成功 : " + filePath);
     }
 
     /**
@@ -126,10 +192,16 @@ public abstract class FastDownloader {
         return RegexUtil.getHtml(html, "GBK");
     }
 
+    /**
+     * 预留的一个清除乱码或者html格式的方法
+     */
     protected String cleanContent(String content) {
-        return content.replaceAll("&nbsp;|<br>|<br/>|<br />", "");
+        return content.replaceAll("&nbsp;|<br>|<br/>|<br />|p&gt;", "");
     }
 
+    /**
+     * 设置下载的并发数量，有的网站服务器质量差，需要设置小点
+     */
     public void setThreadCount(int count) {
         threadCount = count;
     }

@@ -1,47 +1,71 @@
-##笔趣阁小说一键下载器
-[笔趣阁网址](http://www.biquge.com.tw)
+## 小说一键下载工具
 
-目前功能：下载生成txt，分卷txt。编码为gbk(小说里utf-8某些中文显示有问题)
+已支持网站：
 
-下载速度时快时慢，测试最少300k，看服务器流量
+* [笔趣阁](http://www.biquge.com.tw)
+* [笔神阁](http://www.bishenge.com)
+* [看神作(推荐)](http://www.kanshenzuo.com)
+* [南山书院](https://www.szyangxiao.com)
 
-若搜索结果有多个，要稍麻烦些，按照注释部分来就好。。
+#### 目前功能：一键下载并生成格式规范的txt和epub格式的小说
 
-最近心血来潮看起了小说，就写了个这个=_=
+##### 并发下载，理论能达到满速，实测下载速度2m/s以上
 
-选了好久，这个小说网站上的错字目测稍微少一点，整体格式比较规范，爬起来比较容易，以后再增加其他网站的支持
+######目前未适配转换mobi。有需要请自行下载[kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)软件，用epub转mobi，效果很好
+
+--- 
+
+实现原理：
+
+解析小说网站的章节目录，保存所有章节名字以及url，然后再依次解析每一章的文字，按行保存，最后转换为不同格式的文件
+
+###### 使用示例：更改保存路径以及小说名称即可
 
 ```java
-import java.io.*;
-
 public class Main {
 
     //这两个参数请自行更换
-    private final static String bookName = "斗罗大陆III龙王传说";
-    //存放目录，实例目录是mac系统下的，windows需要自行更正“\\”
-    private final static String savePath =
-            "/Users/jiangzilai/Documents/book/斗罗大陆III龙王传说";
+    private final static String bookName = "修真聊天群";
+    //存放目录，该目录是mac系统下的，windows需要自行更正“\\”
+    private final static String savePath = "/Users/zia/Documents/book";
 
-    public static void main(String[] args) throws IOException {
-        BqgDownloader bqgDownloader = new BqgDownloader(bookName, savePath);
-        bqgDownloader.downloadAll2txt();//下载全部内容到一个txt文件里
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-        /*
-        还有两个方法供选择
-        bqgDownloader.downloadAll();//一章一章地下载全部内容
-        bqgDownloader.downloadPart(0,50);//下载1-51章，50个txt，没做越界处理
+        FastDownloader downloader = new Kanshenzuo(bookName, savePath);
 
-        若笔趣阁搜索结果只有一个，那么可以直接如上方法输入汉字下载
-        若搜索结果不止一个的时候，需要手动获取网址。。
-        在浏览器上手动搜索一下，把链接复制下来，
-        如{http://www.biquge.com.tw/16_16288/}
-        这样的目录网址，也可以解析
-        然后添加下面的方法
-        bqgDownloader.setExactUrl("http://www.biquge.com.tw/16_16288/");
-        bqgDownloader.downloadAll2txt();
-        */
+        //下载全部内容到一个txt文件里
+        //downloader.downloadTXT();
+        //下载epub格式，自动生成索引
+        downloader.downloadEPUB();
+        //下载epub并转换为mobi格式
+        //downloader.downloadMOBI();
     }
 }
 
+```
+
+若书名搜索结果重复，会导致解析失败。该情况下需要手动配置网页目录
+
+首先用浏览器打开小说网站（看神作）[http://www.kanshenzuo.com/](http://www.kanshenzuo.com/)
+
+假设搜索 校花的贴身高手 搜索结果将会是多个，选择你想要的，打开进入目录页面，如[校花的贴身高手](http://www.kanshenzuo.com/4_4786/)
+
+###### 使用如下代码即可
+
+```java
+public class Main {
+
+    //这两个参数请自行更换
+    private final static String bookName = "校花的贴身高手";//此时这个是保存的文件名，与小说内容无关
+    private final static String savePath = "/Users/zia/Documents/book";
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        //使用三个参数的构造方法，直接传入目录地址
+        FastDownloader downloader = new Kanshenzuo(bookName, "http://www.kanshenzuo.com/4_4786/", savePath);
+
+        downloader.downloadTXT();
+    }
+}
 ```
 
