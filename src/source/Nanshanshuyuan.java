@@ -51,15 +51,13 @@ public class Nanshanshuyuan extends FastDownloader {
         String html = getHtml(chapter.href);
         String sub = RegexUtil.regexExcept("<div id=\"content\"", "</div>", html).get(0);
         List<String> ps = RegexUtil.regexExcept("<p>", "</p>", sub);
-        StringBuilder sb = new StringBuilder();
 
-        ps.forEach(line -> {
-            sb.append(line.replaceAll("&nbsp;", ""));
-            sb.append("\n");
-        });
+        List<String> content = new ArrayList<>();
+
+        ps.forEach(line -> content.add(cleanContent(line)));
 
         ChapterBuffer chapterBuffer = new ChapterBuffer();
-        chapterBuffer.content = sb.toString();
+        chapterBuffer.content = content;
         chapterBuffer.name = chapter.name;
         chapterBuffer.number = num;
         return chapterBuffer;

@@ -44,20 +44,21 @@ public class Kanshenzuo extends FastDownloader {
         chapterBuffer.number = num;
         chapterBuffer.name = chapter.name;
 
-        StringBuilder sb = new StringBuilder();
         String html = getHtml(chapter.href);
 
-        String sub = RegexUtil.regexExcept("<div id=\"content\">", "</div>", html).get(0);
+        String sub = RegexUtil.regexExcept("<div id=\"content\">","</div>",html).get(0);
 
         String lines[] = sub.split("<br>|<br/>|<br />");
 
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            if (line.isEmpty()) continue;
-            sb.append(line.replaceAll("&nbsp;", ""));
-            sb.append("\n");
+        List<String> content = new ArrayList<>();
+
+        for (String line : lines) {
+            if (!line.isEmpty()){
+                content.add(cleanContent(line));
+            }
         }
-        chapterBuffer.content = sb.toString();
+
+        chapterBuffer.content = content;
         return chapterBuffer;
     }
 }

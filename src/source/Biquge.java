@@ -51,14 +51,15 @@ public class Biquge extends FastDownloader {
     @Override
     protected ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
         String html = getHtml(chapter.getHref());
-        List<String> contents = RegexUtil.regexExcept("&nbsp;&nbsp;&nbsp;&nbsp;", "<br />", html);
-        StringBuilder sb = new StringBuilder();
-        contents.forEach(s -> {
-            sb.append(s.replaceAll("&nbsp;", ""));
-            sb.append("\n");
+        List<String> lines = RegexUtil.regexExcept("&nbsp;&nbsp;&nbsp;&nbsp;", "<br />", html);
+        List<String> contents = new ArrayList<>();
+
+        lines.forEach(s -> {
+            contents.add(cleanContent(s));
         });
+
         ChapterBuffer chapterBuffer = new ChapterBuffer();
-        chapterBuffer.content = sb.toString();
+        chapterBuffer.content = contents;
         chapterBuffer.name = chapter.name;
         chapterBuffer.number = num;
         return chapterBuffer;
