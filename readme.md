@@ -11,7 +11,7 @@
 
 ##### 并发下载，理论能达到满速，实测下载速度2m/s以上
 
-######目前未适配转换mobi。有需要请自行下载[kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)软件，用epub转mobi，效果很好
+###### 目前未适配转换mobi。有需要请自行下载[kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)软件，用epub转mobi，效果很好
 
 --- 
 
@@ -48,7 +48,9 @@ public class Main {
 
 首先用浏览器打开小说网站（看神作）[http://www.kanshenzuo.com/](http://www.kanshenzuo.com/)
 
-假设搜索 校花的贴身高手 搜索结果将会是多个，选择你想要的，打开进入目录页面，如[校花的贴身高手](http://www.kanshenzuo.com/4_4786/)
+假设搜索 校花的贴身高手 搜索结果将会是多个，选择你想要的，打开进入目录页面，如[http://www.kanshenzuo.com/4_4786/](http://www.kanshenzuo.com/4_4786/)
+
+将这个网址复制下来放在如下的参数里就行了
 
 ###### 使用如下代码即可
 
