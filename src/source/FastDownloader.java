@@ -162,23 +162,47 @@ public abstract class FastDownloader {
         AtomicInteger error = new AtomicInteger();
         error.set(0);
 
+        LinkedBlockingDeque<Chapter> errorChapters = new LinkedBlockingDeque<>(capacity);
+
         for (int i = 0; i < chapters.size(); i++) {
             int finalI = i;
             threadPool.execute(() -> {
                 try {
                     //章节html解析，需要实现抽象类
-                    chapterBuffers.add(adaptBookBuffer(chapters.get(finalI), finalI));
+                    Chapter chapter = chapters.get(finalI);
+                    chapter.num = finalI;
+                    chapterBuffers.add(adaptBookBuffer(chapter, finalI));
+                    System.out.println(chapter.name);
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    error.addAndGet(1);
-                    System.out.println("出错章节 ： " + chapters.get(finalI));
+                    error.getAndIncrement();
+                    errorChapters.add(chapters.get(finalI));
+                    System.out.println("重试章节 ： " + chapters.get(finalI));
                 }
                 countDownLatch.countDown();
-                System.out.println(chapters.get(finalI).name);
             });
         }
         //等待全部下载完毕
         countDownLatch.await();
+
+        //重试错误章节
+        System.out.println("开始重试");
+        CountDownLatch errorDownLatch = new CountDownLatch(errorChapters.size());
+        for (Chapter errorChapter : errorChapters) {
+            threadPool.execute(() -> {
+                try {
+                    //章节html解析，需要实现抽象类
+                    chapterBuffers.add(adaptBookBuffer(errorChapter,errorChapter.num));
+                    System.out.println(errorChapter.name);
+                    error.getAndDecrement();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    System.out.println("出错章节 ： " + errorChapter);
+                }
+                errorDownLatch.countDown();
+            });
+        }
+        errorDownLatch.await();
+        //关闭线程池
         threadPool.shutdown();
         System.out.println("下载完成，出错数量 ： " + error.get());
         //装在List里，并根据number排序返回

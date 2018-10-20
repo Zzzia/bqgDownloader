@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created By zia on 2018/10/5.
  * 笔趣阁  http://www.biquge.com.tw
- * 测试约1.5m/s
+ * 测试可达到4.5m/s
  */
 public class Biquge extends FastDownloader {
 

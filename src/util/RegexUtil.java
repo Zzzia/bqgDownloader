@@ -85,8 +85,8 @@ public class RegexUtil {
         // 打开和URL之间的连接
         URLConnection connection = realUrl.openConnection();
         // 设置通用的请求属性
-        connection.setConnectTimeout(100000);
-        connection.setReadTimeout(100000);
+        connection.setConnectTimeout(50000);
+        connection.setReadTimeout(50000);
         connection.setRequestProperty("accept", "*/*");
         connection.setRequestProperty("connection", "Keep-Alive");
         connection.setRequestProperty("Charsert", "UTF-8");
