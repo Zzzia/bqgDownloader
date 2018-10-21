@@ -5,6 +5,9 @@ import okhttp3.Request;
 import okhttp3.ResponseBody;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -13,8 +16,10 @@ import java.util.concurrent.TimeUnit;
 public class NetUtil {
     private static OkHttpClient okHttpClient = new OkHttpClient.Builder()
             .readTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            //请设置代理，否则会被小说网站ban的...量小没关系
+//            .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("58.241.186.90", 43043)))
             .build();
 
     /**
@@ -38,5 +43,16 @@ public class NetUtil {
         } else {
             return new String(body.bytes(), encodeType);
         }
+    }
+
+    private static Random mRandom = new Random();
+
+    /**
+     * 获取随机ip地址
+     *
+     * @return random ip
+     */
+    private static String getRandomIPAddress() {
+        return String.valueOf(mRandom.nextInt(255)) + "." + String.valueOf(mRandom.nextInt(255)) + "." + String.valueOf(mRandom.nextInt(255)) + "." + String.valueOf(mRandom.nextInt(255));
     }
 }

@@ -25,7 +25,7 @@ public class E8 extends FastDownloader {
     @Override
     protected List<Chapter> getChapters(String catalogUrl) throws IOException {
         String html = getHtml(catalogUrl, "utf-8");
-        String first = RegexUtil.regexExcept("<div id=\"list\">", "</div>", html).get(0);
+        String first = RegexUtil.regexExcept("<div id=\"list\">", "<script>", html).get(0);
         String dirtys = RegexUtil.regexInclude("</dt>", "<dt>", first).get(0);//删除最新章节
         String ddHtml = first.substring(dirtys.length());
         List<String> DDs = RegexUtil.regexExcept("<dd>", "</dd>", ddHtml);
@@ -46,11 +46,11 @@ public class E8 extends FastDownloader {
         String html = getHtml(chapter.href, "utf-8");
         String contents = RegexUtil.regexExcept("<div id=\"content\">", "</div>", html).get(0);
         String texts[] = contents.split("<br>|<br/>");
+
         ChapterBuffer buffer = new ChapterBuffer();
         List<String> lines = new ArrayList<>();
-
         for (String text : texts) {
-            if (text.length() != 0) {
+            if (!text.trim().isEmpty()) {
                 lines.add(cleanContent(text));
             }
         }

@@ -56,7 +56,9 @@ public class Biquge extends FastDownloader {
         List<String> contents = new ArrayList<>();
 
         lines.forEach(s -> {
-            contents.add(cleanContent(s));
+            if (!s.trim().isEmpty()){
+                contents.add(cleanContent(s));
+            }
         });
 
         ChapterBuffer chapterBuffer = new ChapterBuffer();

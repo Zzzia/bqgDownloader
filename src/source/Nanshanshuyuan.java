@@ -55,7 +55,11 @@ public class Nanshanshuyuan extends FastDownloader {
 
         List<String> content = new ArrayList<>();
 
-        ps.forEach(line -> content.add(cleanContent(line)));
+        ps.forEach(line -> {
+            if (!line.trim().isEmpty()){
+                content.add(cleanContent(line));
+            }
+        });
 
         ChapterBuffer chapterBuffer = new ChapterBuffer();
         chapterBuffer.content = content;

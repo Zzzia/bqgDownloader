@@ -72,7 +72,7 @@ public class Kanshenzuo extends FastDownloader {
         List<String> content = new ArrayList<>();
 
         for (String line : lines) {
-            if (!line.isEmpty()) {
+            if (!line.trim().isEmpty()) {
                 content.add(cleanContent(line));
             }
         }

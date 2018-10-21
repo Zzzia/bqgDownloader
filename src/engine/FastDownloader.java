@@ -228,7 +228,7 @@ public abstract class FastDownloader {
      * 预留的一个清除乱码或者html格式的方法
      */
     protected String cleanContent(String content) {
-        return content.replaceAll("&nbsp;|<br>|<br/>|<br />|p&gt;|&gt;", "").trim();
+        return content.replaceAll("\n|\t|\r|&nbsp;|<br>|<br/>|<br />|p&gt;|&gt;", "").trim();
     }
 
     /**
