@@ -1,6 +1,7 @@
 import engine.FastDownloader;
 import source.Biquge;
 import source.Bishenge;
+import source.E8;
 import source.Kanshenzuo;
 
 import java.io.IOException;
@@ -14,13 +15,13 @@ import java.io.IOException;
 public class Main {
 
     //这两个参数请自行更换
-    private final static String bookName = "校花的贴身高手";
+    private final static String bookName = "异世傲天";
     //存放目录，该目录是mac系统下的，windows需要自行更正“\\”
     private final static String savePath = "/Users/jiangzilai/Documents/book";
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        FastDownloader downloader = new Bishenge(bookName, "http://www.bishenge.com/1_1693/", savePath);
+        FastDownloader downloader = new E8(bookName, "https://www.e8zw.com/book/1/1357/", savePath);
 
         //下载全部内容到一个txt文件里
 //        downloader.downloadTXT();

@@ -195,6 +195,10 @@ public abstract class FastDownloader {
                 } catch (IOException e) {
                     e.printStackTrace();
                     System.out.println("出错章节 ： " + errorChapter);
+                }catch (IndexOutOfBoundsException e1){//数组越界，说明解析错误
+                    e1.printStackTrace();
+                    System.out.println("解析错误，请修改代码");
+                    System.exit(0);
                 }
                 errorDownLatch.countDown();
             });
@@ -216,11 +220,15 @@ public abstract class FastDownloader {
         return NetUtil.getHtml(html);
     }
 
+    protected String getHtml(String html, String encodeType) throws IOException {
+        return NetUtil.getHtml(html, encodeType);
+    }
+
     /**
      * 预留的一个清除乱码或者html格式的方法
      */
     protected String cleanContent(String content) {
-        return content.replaceAll("&nbsp;|<br>|<br/>|<br />|p&gt;|&gt;", "");
+        return content.replaceAll("&nbsp;|<br>|<br/>|<br />|p&gt;|&gt;", "").trim();
     }
 
     /**
