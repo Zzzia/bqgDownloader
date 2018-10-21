@@ -2,6 +2,7 @@ package source;
 
 import bean.Chapter;
 import bean.ChapterBuffer;
+import engine.FastDownloader;
 import util.RegexUtil;
 
 import java.io.IOException;

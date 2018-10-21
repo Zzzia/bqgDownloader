@@ -68,44 +68,6 @@ public class RegexUtil {
 
 
     /**
-     * 同步获取html文件，默认编码utf-8
-     *
-     * @param url
-     * @return
-     */
-    public static String getHtml(String url) throws IOException {
-        return getHtml(url, "utf-8");
-    }
-
-    public static String getHtml(String url, String encodeType) throws IOException {
-        if (openLog) System.out.println("connect : " + url);
-        StringBuilder result = new StringBuilder();
-        BufferedReader in = null;
-        URL realUrl = new URL(url);
-        // 打开和URL之间的连接
-        URLConnection connection = realUrl.openConnection();
-        // 设置通用的请求属性
-        connection.setConnectTimeout(50000);
-        connection.setReadTimeout(50000);
-        connection.setRequestProperty("accept", "*/*");
-        connection.setRequestProperty("connection", "Keep-Alive");
-        connection.setRequestProperty("Charsert", "UTF-8");
-        connection.setRequestProperty("user-agent",
-                "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-        // 建立实际的连接
-        connection.connect();
-        // 定义 BufferedReader输入流来读取URL的响应
-        in = new BufferedReader(new InputStreamReader(connection.getInputStream(), encodeType));
-        String line;
-        while ((line = in.readLine()) != null) {
-            result.append(line);
-        }
-        in.close();
-        if (openLog) System.out.println(result);
-        return result.toString();
-    }
-
-    /**
      * 用于解析类似<a...>..</a>的工具
      * <p>
      * String html = "<a href=\"15818515.html\">第21章 我很大，活很好，很持久，还能旋转</a>";

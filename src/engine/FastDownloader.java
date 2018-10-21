@@ -1,9 +1,8 @@
-package source;
+package engine;
 
 import bean.Chapter;
 import bean.ChapterBuffer;
 import tool.FoxEpubWriter;
-import util.RegexUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public abstract class FastDownloader {
     private String bookName;
     private String catalogUrl;
     private String path;
-    private int capacity = 3000;
+    private int capacity = 10000;
     private int threadCount = 100;
 
     public FastDownloader(String bookName, String catalogUrl, String path) {
@@ -183,7 +182,6 @@ public abstract class FastDownloader {
         }
         //等待全部下载完毕
         countDownLatch.await();
-
         //重试错误章节
         System.out.println("开始重试");
         CountDownLatch errorDownLatch = new CountDownLatch(errorChapters.size());
@@ -191,7 +189,7 @@ public abstract class FastDownloader {
             threadPool.execute(() -> {
                 try {
                     //章节html解析，需要实现抽象类
-                    chapterBuffers.add(adaptBookBuffer(errorChapter,errorChapter.num));
+                    chapterBuffers.add(adaptBookBuffer(errorChapter, errorChapter.num));
                     System.out.println(errorChapter.name);
                     error.getAndDecrement();
                 } catch (IOException e) {
@@ -205,6 +203,7 @@ public abstract class FastDownloader {
         //关闭线程池
         threadPool.shutdown();
         System.out.println("下载完成，出错数量 ： " + error.get());
+        System.out.println("正在保存...");
         //装在List里，并根据number排序返回
         List<ChapterBuffer> books = new ArrayList<>(capacity);
         books.addAll(chapterBuffers);
@@ -212,8 +211,9 @@ public abstract class FastDownloader {
         return books;
     }
 
+    //使用okHttp3的网络请求封装，默认使用
     protected String getHtml(String html) throws IOException {
-        return RegexUtil.getHtml(html, "GBK");
+        return NetUtil.getHtml(html);
     }
 
     /**

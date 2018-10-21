@@ -6,10 +6,13 @@
 * [笔神阁](http://www.bishenge.com)
 * [看神作(推荐)](http://www.kanshenzuo.com)
 * [南山书院](https://www.szyangxiao.com)
+* [E8中文网](http://www.e8zw.com)
 
 #### 目前功能：一键下载并生成格式规范的txt和epub格式的小说
 
-##### 并发下载，理论能达到满速，实测下载速度2m/s以上
+##### 并发下载，错误重试，理论能达到满速，实测下载速度2m/s以上
+
+###### 网络请求采用okHttp，需要添加kotlin支持，最新版idea自带该插件，在KotlinPlugin文件里指定即可
 
 ###### 目前未适配转换mobi。有需要请自行下载[kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)软件，用epub转mobi，效果很好
 
@@ -46,9 +49,9 @@ public class Main {
 
 若书名搜索结果重复，会导致解析失败。该情况下需要手动配置网页目录
 
-首先用浏览器打开小说网站（看神作）[http://www.kanshenzuo.com/](http://www.kanshenzuo.com/)
+首先用浏览器打开小说网站（笔神阁）[http://www.bishenge.com/](http://www.bishenge.com/)
 
-假设搜索 校花的贴身高手 搜索结果将会是多个，选择你想要的，打开进入目录页面，如[http://www.kanshenzuo.com/4_4786/](http://www.kanshenzuo.com/4_4786/)
+假设搜索 校花的贴身高手 搜索结果将会是多个，选择你想要的，打开进入目录页面，如[http://www.bishenge.com/1_1693/](http://www.bishenge.com/1_1693/)
 
 将这个网址复制下来放在如下的参数里就行了
 
@@ -57,16 +60,15 @@ public class Main {
 ```java
 public class Main {
 
-    //这两个参数请自行更换
-    private final static String bookName = "校花的贴身高手";//此时这个是保存的文件名，与小说内容无关
-    private final static String savePath = "/Users/zia/Documents/book";
+    private final static String bookName = "校花的贴身高手";
+    private final static String savePath = "/Users/jiangzilai/Documents/book";
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        //使用三个参数的构造方法，直接传入目录地址
-        FastDownloader downloader = new Kanshenzuo(bookName, "http://www.kanshenzuo.com/4_4786/", savePath);
+        FastDownloader downloader = new Bishenge(bookName, "http://www.bishenge.com/1_1693/", savePath);
 
-        downloader.downloadTXT();
+        //下载epub格式，自动生成索引
+        downloader.downloadEPUB();
     }
 }
 ```

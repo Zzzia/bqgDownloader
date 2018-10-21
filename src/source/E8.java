@@ -2,6 +2,7 @@ package source;
 
 import bean.Chapter;
 import bean.ChapterBuffer;
+import engine.FastDownloader;
 import util.RegexUtil;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class E8 extends FastDownloader {
 
     @Override
     protected List<Chapter> getChapters(String catalogUrl) throws IOException {
-        String html = RegexUtil.getHtml(catalogUrl);
+        String html = getHtml(catalogUrl);
         String first = RegexUtil.regexExcept("<div id=\"list\">", "</div>", html).get(0);
         System.out.println(first);
         String ddHtml = RegexUtil.regexExcept("<dt>《逆天邪神》</dt>", "</dl>", first).get(0);
@@ -43,7 +44,7 @@ public class E8 extends FastDownloader {
 
     @Override
     protected ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
-        String html = RegexUtil.getHtml(chapter.href);
+        String html = getHtml(chapter.href);
         String first = RegexUtil.regexExcept("<div id=\"content\">", "</div>", html).get(0);
         String texts[] = first.split("<br>|<br/>");
         ChapterBuffer buffer = new ChapterBuffer();
