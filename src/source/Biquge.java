@@ -49,7 +49,6 @@ public class Biquge extends FastDownloader {
             chapter.href = root + RegexUtil.regexExcept("<a href=\"", "\">", a).get(0);
             chapters.add(chapter);
         }
-        System.out.println(chapters);
         return chapters;
     }
 

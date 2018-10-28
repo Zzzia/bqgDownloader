@@ -23,10 +23,10 @@ public class NetUtil {
             .build();
 
     /**
-     * 同步获取html文件，默认编码gb2312
+     * 同步获取html文件，默认编码gbk
      */
     public static String getHtml(String url) throws IOException {
-        return getHtml(url, "gb2312");
+        return getHtml(url, "gbk");
     }
 
     public static String getHtml(String url, String encodeType) throws IOException {

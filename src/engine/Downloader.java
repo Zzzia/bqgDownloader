@@ -32,7 +32,7 @@ class Downloader {
         this.threadPool = Executors.newFixedThreadPool(threadCount);
     }
 
-    public ArrayList<ChapterBuffer> download() throws IOException, InterruptedException {
+    ArrayList<ChapterBuffer> download() throws IOException, InterruptedException {
         System.out.println("解析目录...");
 
         //从目录页获取有序章节
@@ -52,14 +52,16 @@ class Downloader {
 
         int index = 0;
 
-        while (getBufferSize() < size) {
-            synchronized (queueLock) {//一旦拿到锁，下载队列中所有的章节
+        synchronized (queueLock) {
+            //探测是否全部下载
+            while (getBufferSize() < size) {
                 Chapter chapter = queue.poll();
-                if (chapter == null) {//如果队列为空，释放锁
-                    Thread.sleep(1000);
+                if (chapter == null) {//如果队列为空，释放锁，等待唤醒或者超时后继续探测
+                    queueLock.wait(1000);
                 } else {//队列有章节，下载所有
                     while (chapter != null) {
                         Chapter finalChapter = chapter;
+                        //如果是失败的章节，不赋值num，防止被覆盖
                         if (finalChapter.num == -1) {
                             finalChapter.num = index++;
                         }
@@ -100,6 +102,8 @@ class Downloader {
     private void addQueue(Chapter chapter) {
         synchronized (queueLock) {
             queue.offer(chapter);
+            //唤醒线程，添加所有章节到下载队列
+            queueLock.notify();
         }
     }
 }

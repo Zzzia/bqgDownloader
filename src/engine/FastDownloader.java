@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Created By zia on 2018/10/5.
- * 网站解析抽象父类
+ * 快速下载指定格式小说的框架
  */
 public abstract class FastDownloader implements CustomRegex {
 
