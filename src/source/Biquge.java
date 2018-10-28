@@ -24,6 +24,10 @@ public class Biquge extends FastDownloader {
         super(bookName, getUrl(bookName), path);
     }
 
+    public Biquge(String bookName, String catalogUrl, String path) {
+        super(bookName, catalogUrl, path);
+    }
+
     private static String getUrl(String bookName) {
         try {
             return root + "/modules/article/soshu.php?searchkey=+"
@@ -35,10 +39,10 @@ public class Biquge extends FastDownloader {
     }
 
     @Override
-    protected List<Chapter> getChapters(String catalogUrl) throws IOException {
+    public List<Chapter> getChapters(String catalogUrl) throws IOException {
         String catalogHTML = getHtml(catalogUrl);
         List<String> as = RegexUtil.regexExcept("<dd>", "</dd>", catalogHTML);
-        List<Chapter> chapters = new ArrayList<>(1000);
+        List<Chapter> chapters = new ArrayList<>(10000);
         for (String a : as) {
             Chapter chapter = new Chapter();
             chapter.name = RegexUtil.regexExcept("\">", "</a>", a).get(0);
@@ -50,7 +54,7 @@ public class Biquge extends FastDownloader {
     }
 
     @Override
-    protected ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
+    public ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
         String html = getHtml(chapter.getHref());
         List<String> lines = RegexUtil.regexExcept("&nbsp;&nbsp;&nbsp;&nbsp;", "<br />", html);
         List<String> contents = new ArrayList<>();

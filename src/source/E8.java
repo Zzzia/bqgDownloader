@@ -23,7 +23,7 @@ public class E8 extends FastDownloader {
     }
 
     @Override
-    protected List<Chapter> getChapters(String catalogUrl) throws IOException {
+    public List<Chapter> getChapters(String catalogUrl) throws IOException {
         String html = getHtml(catalogUrl, "utf-8");
         String first = RegexUtil.regexExcept("<div id=\"list\">", "<script>", html).get(0);
         String dirtys = RegexUtil.regexInclude("</dt>", "<dt>", first).get(0);//删除最新章节
@@ -42,7 +42,7 @@ public class E8 extends FastDownloader {
     }
 
     @Override
-    protected ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
+    public ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
         String html = getHtml(chapter.href, "utf-8");
         String contents = RegexUtil.regexExcept("<div id=\"content\">", "</div>", html).get(0);
         String texts[] = contents.split("<br>|<br/>");

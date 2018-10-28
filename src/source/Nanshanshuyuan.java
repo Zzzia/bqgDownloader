@@ -25,7 +25,7 @@ public class Nanshanshuyuan extends FastDownloader {
     }
 
     @Override
-    protected List<Chapter> getChapters(String catalogUrl) throws IOException {
+    public List<Chapter> getChapters(String catalogUrl) throws IOException {
         String html = getHtml(catalogUrl);
         String sub = RegexUtil.regexExcept("<ul class=\"nav clearfix\">", "</ul>", html).get(0);
 
@@ -43,7 +43,7 @@ public class Nanshanshuyuan extends FastDownloader {
     }
 
     @Override
-    protected ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
+    public ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

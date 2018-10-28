@@ -21,7 +21,7 @@ public class Bishenge extends FastDownloader {
     }
 
     @Override
-    protected List<Chapter> getChapters(String catalogUrl) throws IOException {
+    public List<Chapter> getChapters(String catalogUrl) throws IOException {
         String catalogHTML = getHtml(catalogUrl);
         String sub = RegexUtil.regexExcept("<div id=\"list\">", "</div>", catalogHTML).get(0);
         String ssub = sub.split("正文</dt>")[1];
@@ -38,7 +38,7 @@ public class Bishenge extends FastDownloader {
     }
 
     @Override
-    protected ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
+    public ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException {
         ChapterBuffer chapterBuffer = new ChapterBuffer();
         chapterBuffer.number = num;
         chapterBuffer.name = chapter.name;

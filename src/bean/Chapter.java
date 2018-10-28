@@ -6,7 +6,7 @@ package bean;
 public class Chapter {
     public String name;
     public String href;
-    public int num;
+    public int num = -1;
 
     @Override
     public String toString() {

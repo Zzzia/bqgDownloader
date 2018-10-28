@@ -1,29 +1,20 @@
 package engine;
 
-import bean.Chapter;
 import bean.ChapterBuffer;
 import tool.FoxEpubWriter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created By zia on 2018/10/5.
  * 网站解析抽象父类
  */
-public abstract class FastDownloader {
+public abstract class FastDownloader implements CustomRegex {
 
     private String bookName;
     private String catalogUrl;
     private String path;
-    private int capacity = 10000;
     private int threadCount = 100;
 
     public FastDownloader(String bookName, String catalogUrl, String path) {
@@ -38,35 +29,11 @@ public abstract class FastDownloader {
         }
     }
 
-    /**
-     * 根据小说目录页面解析所有的小说章节
-     *
-     * @param catalogUrl 目录地址
-     * @return Chapter集合
-     */
-    protected abstract List<Chapter> getChapters(String catalogUrl) throws IOException;
-
-    /**
-     * 通过小说章节解析这一章节的html文字，保存在ChapterBuffer中
-     *
-     * @param chapter 小说章节 包括了url和标题
-     * @param num     序号，之后排序的标准
-     * @return ChapterBuffer集合
-     */
-    protected abstract ChapterBuffer adaptBookBuffer(Chapter chapter, int num) throws IOException;
-
     public void downloadTXT() throws IOException, InterruptedException {
         String filePath = path + File.separator + bookName + ".txt";
 
-        System.out.println("解析目录...");
-
-        //从目录页获取有序章节
-        List<Chapter> chapters = getChapters(catalogUrl);
-
-        System.out.println("开始下载章节...");
-
-        //并发下载所有章节，根据顺序排序
-        List<ChapterBuffer> books = downloadChapter(chapters);
+        Downloader downloader = new Downloader(catalogUrl, this, threadCount);
+        List<ChapterBuffer> books = downloader.download();
 
         BufferedWriter bufferedWriter =
                 new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath)));
@@ -113,16 +80,6 @@ public abstract class FastDownloader {
         }
         String filePath = path + File.separator + name;
 
-        System.out.println("解析目录...");
-
-        //从目录页获取有序章节
-        List<Chapter> chapters = getChapters(catalogUrl);
-
-        System.out.println("开始下载章节...");
-
-        //并发下载所有章节，根据顺序排序
-        List<ChapterBuffer> books = downloadChapter(chapters);
-
         FoxEpubWriter foxEpubWriter = new FoxEpubWriter(new File(filePath), name);
 
         if (isMOBI) {
@@ -130,6 +87,9 @@ public abstract class FastDownloader {
         } else {
             foxEpubWriter.setEpub(true);
         }
+
+        Downloader downloader = new Downloader(catalogUrl, this, threadCount);
+        List<ChapterBuffer> books = downloader.download();
 
         books.forEach(chapterBuffer -> {
             StringBuilder content = new StringBuilder();
@@ -144,75 +104,6 @@ public abstract class FastDownloader {
 
         foxEpubWriter.saveAll();
         System.out.println("保存成功 : " + filePath);
-    }
-
-    /**
-     * 获取章节内容
-     */
-    private List<ChapterBuffer> downloadChapter(List<Chapter> chapters) throws InterruptedException {
-        //非阻塞集合，临时装一下ChapterBuffer
-        LinkedBlockingDeque<ChapterBuffer> chapterBuffers = new LinkedBlockingDeque<>(capacity);
-
-        //线程 并发结束标志
-        ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch countDownLatch = new CountDownLatch(chapters.size());
-
-        //记录错误数量
-        AtomicInteger error = new AtomicInteger();
-        error.set(0);
-
-        LinkedBlockingDeque<Chapter> errorChapters = new LinkedBlockingDeque<>(capacity);
-
-        for (int i = 0; i < chapters.size(); i++) {
-            int finalI = i;
-            threadPool.execute(() -> {
-                try {
-                    //章节html解析，需要实现抽象类
-                    Chapter chapter = chapters.get(finalI);
-                    chapter.num = finalI;
-                    chapterBuffers.add(adaptBookBuffer(chapter, finalI));
-                    System.out.println(chapter.name);
-                } catch (IOException e) {
-                    error.getAndIncrement();
-                    errorChapters.add(chapters.get(finalI));
-                    System.out.println("重试章节 ： " + chapters.get(finalI));
-                }
-                countDownLatch.countDown();
-            });
-        }
-        //等待全部下载完毕
-        countDownLatch.await();
-        //重试错误章节
-        System.out.println("开始重试");
-        CountDownLatch errorDownLatch = new CountDownLatch(errorChapters.size());
-        for (Chapter errorChapter : errorChapters) {
-            threadPool.execute(() -> {
-                try {
-                    //章节html解析，需要实现抽象类
-                    chapterBuffers.add(adaptBookBuffer(errorChapter, errorChapter.num));
-                    System.out.println(errorChapter.name);
-                    error.getAndDecrement();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("出错章节 ： " + errorChapter);
-                }catch (IndexOutOfBoundsException e1){//数组越界，说明解析错误
-                    e1.printStackTrace();
-                    System.out.println("解析错误，请修改代码");
-                    System.exit(0);
-                }
-                errorDownLatch.countDown();
-            });
-        }
-        errorDownLatch.await();
-        //关闭线程池
-        threadPool.shutdown();
-        System.out.println("下载完成，出错数量 ： " + error.get());
-        System.out.println("正在保存...");
-        //装在List里，并根据number排序返回
-        List<ChapterBuffer> books = new ArrayList<>(capacity);
-        books.addAll(chapterBuffers);
-        books.sort(Comparator.comparingInt(o -> o.number));
-        return books;
     }
 
     //使用okHttp3的网络请求封装，默认使用
