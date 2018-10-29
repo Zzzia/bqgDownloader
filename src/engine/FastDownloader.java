@@ -15,7 +15,9 @@ public abstract class FastDownloader implements CustomRegex {
     private String bookName;
     private String catalogUrl;
     private String path;
-    private int threadCount = 100;
+    //OkHttp3最大并发访问数量其实是5，请不要修改。经过血泪教训，超过可能被拉入黑名单
+    //增加该线程的数量是为了加快正则解析速度，从而提高访问速度，玄学调参，请勿修改
+    private int threadCount = 300;
 
     public FastDownloader(String bookName, String catalogUrl, String path) {
         this.bookName = bookName;
