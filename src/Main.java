@@ -13,18 +13,18 @@ import java.io.IOException;
 public class Main {
 
     //这两个参数请自行更换
-    private final static String bookName = "最强医圣";
+    private final static String bookName = "赤心巡天";
     //存放目录，该目录是mac系统下的，windows需要自行更正“\\”
-    private final static String savePath = "/Users/jiangzilai/Documents/book";
+    private final static String savePath = ".";
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        FastDownloader downloader = new Bishenge(bookName, "http://www.bishenge.com/0_4/", savePath);
+        FastDownloader downloader = new Bishenge(bookName, "https://www.xbiquge.bz/book/54531/", savePath);
 
         //下载全部内容到一个txt文件里
-//        downloader.downloadTXT();
+        downloader.downloadTXT();
         //下载epub格式，自动生成索引
-        downloader.downloadEPUB();
+//        downloader.downloadEPUB();
         //下载epub并转换为mobi格式
         //downloader.downloadMOBI();
     }

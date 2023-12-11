@@ -45,7 +45,7 @@ public class Bishenge extends FastDownloader {
 
         String html = getHtml(chapter.href);
 
-        String sub = RegexUtil.regexExcept("<div id=\"content\">", "</div>", html).get(0);
+        String sub = RegexUtil.regexExcept("<div id=\"content\" name=\"content\">", "</div>", html).get(0);
 
         String lines[] = sub.split("<br>|<br/>|<br />");
 
