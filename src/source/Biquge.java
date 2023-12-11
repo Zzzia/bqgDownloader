@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Biquge extends FastDownloader {
 
-    private final static String root = "http://www.biquge.com.tw";
+    private final static String root = "https://www.xbiquge.bz/";
 
     public Biquge(String bookName, String path) {
         super(bookName, getUrl(bookName), path);

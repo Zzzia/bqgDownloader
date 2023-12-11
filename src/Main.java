@@ -1,4 +1,5 @@
 import engine.FastDownloader;
+import source.Biquge;
 import source.Bishenge;
 import source.E8;
 
@@ -19,7 +20,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        FastDownloader downloader = new Bishenge(bookName, "https://www.xbiquge.bz/book/54531/", savePath);
+        FastDownloader downloader = new Biquge(bookName, "https://www.xbiquge.bz/book/54531/", savePath);
 
         //下载全部内容到一个txt文件里
         downloader.downloadTXT();
